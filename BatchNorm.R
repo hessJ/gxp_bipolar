@@ -60,7 +60,7 @@ for( i in 1:length(dir)){
       Exprs = data.frame(PROBEID = rownames(Exprs), Exprs)
       } else {
         # the road to RMA, quantiled normalized exon array data
-      RMA = rma(readCel, normalize = T);
+      RMA = rma(readCel, normalize = T, target = "probeset");
       Exprs = exprs(RMA)
       Exprs = data.frame(PROBEID = rownames(Exprs), Exprs)
       } # standard RMA (exon array)
