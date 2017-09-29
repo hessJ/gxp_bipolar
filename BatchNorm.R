@@ -32,6 +32,8 @@ NormOut = "~/Google Drive/mac_storage/TWAS/bd_mega/data/blood/normalized_data"
 # 3. Write normalized data to new folder
 # AFFY: GC-RMA or RMA w/ quantile normalization (log2 transformed)
 # ILMN: Background correction based on Detection Pval columns (log2 transformed)
+
+
 for( i in 1:length(dir)){
   
   cat("\rImporting data from:",dir[[i]])
@@ -67,12 +69,14 @@ for( i in 1:length(dir)){
     
     # Possibly a pre-made expression matrix (common with Illumina data on GEO)
     if(length(CEL) < 1){
-      NON = list.files(dir[[i]], full.names = T, pattern = "non-normalized_data.txt")
+      NON = list.files(dir[[i]], full.names = T, pattern = "non-normalized")
       NON = NON[!grepl(".gz", NON)]
       if(length(NON) == 0) next
       cat("\n   Detected ILMN matrix...")
       NONread = fread(NON, h=T, sep=  "\t")
-      exprnames = colnames(NONread)[!grepl("Probe|Detection", colnames(NONread))]
+      exprnames = colnames(NONread)[!grepl("Probe|ID_REF|Detection", colnames(NONread))]
+      
+      
       
       colnames(NONread)[colnames(NONread) %in% exprnames] = "avgExpr"
       fwrite(NONread, 
@@ -83,7 +87,8 @@ for( i in 1:length(dir)){
       idata <- read.ilmn(paste(dir[[i]],"/ILMN_format.txt",sep=""), 
                          other.columns="Detection Pval",
                          expr = "avgExpr",
-                         probeid = "ProbeID")
+                         probeid = colnames(NONread)[[1]])
+      
       # background correction using Detection p-value column
       y <- neqc(idata, detection.p = "Detection Pval")
       # expression object
@@ -119,3 +124,4 @@ for( i in 1:length(dir)){
   if(length(CEL) == 0 & length(NON) == 0) {stop("No expression files detected! Data may be placed in wrong directory.")}
     
 }
+
