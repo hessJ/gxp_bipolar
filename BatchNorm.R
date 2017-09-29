@@ -1,13 +1,12 @@
 
 # load these packages (install if needed)
-require(affy)
-require(oligo)
-library(biomaRt)
-require(plyr)
-require(ggplot2)
-require(data.table)
-require(gcrma)
-library(limma)
+require(affy) # req'd
+require(oligo) # req'd
+require(plyr) # recommended 
+require(ggplot2) # recommended
+require(data.table) # req'd
+require(gcrma) # req'd
+library(limma)# req'd
 
 # list directories containing microarray data 
 # Compatible with Affymetrix CEL (gene chip or exon array) and Illumina txt file (ProbeID, Sample, Detection Pval)
