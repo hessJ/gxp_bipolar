@@ -26,8 +26,13 @@ if(dircreate == F){ dir.create(path = "~/Google Drive/mac_storage/TWAS/bd_mega/d
 NormOut = "~/Google Drive/mac_storage/TWAS/bd_mega/data/blood/normalized_data"
 
 
-# import CEL files (or text files)
-
+# Serial processing
+# Import microarray (RNA expression) data from each study
+# 1. Normalize 
+# 2. Plot normalized data to new folder
+# 3. Write normalized data to new folder
+# AFFY: GC-RMA or RMA w/ quantile normalization (log2 transformed)
+# ILMN: Background correction based on Detection Pval columns (log2 transformed)
 for( i in 1:length(dir)){
   
   cat("\rImporting data from:",dir[[i]])
