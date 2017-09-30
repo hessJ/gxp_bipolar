@@ -61,8 +61,18 @@ for( i in 1:length(dir)){
       } else {
         # the road to RMA, quantiled normalized exon array data
       RMA = rma(readCel, normalize = T, target = "probeset");
+      
+      featureData(RMA) <- getNetAffx(RMA, "probeset")
+      annot = pData(featureData(RMA))
+      annot = annot[,c("probesetid","transcriptclusterid")]
+      
+      fwrite(annot, file = paste(NormOut,"/",basename(dir[[i]]),"_PROBEID.txt", sep =""),
+             quote = F, row.names = F, sep= "\t")
+      
       Exprs = exprs(RMA)
+      
       Exprs = data.frame(PROBEID = rownames(Exprs), Exprs)
+      
       } # standard RMA (exon array)
     
   }
