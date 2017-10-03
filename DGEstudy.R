@@ -26,6 +26,7 @@ datExprFull = data.table(collapse)
 study_id = unique(datExprFull$FACTOR_studyID)
 
 datExprFull$FACTOR_dx = factor(datExprFull$FACTOR_dx, levels=c("BD","CT"))
+datExprFull$FACTOR_sex[datExprFull$FACTOR_sex %in% ""] = NA
 
 save_results = list()
 for( i in 1:length(study_id)){
@@ -145,7 +146,7 @@ for( i in 1:length(study_id)){
   exprs = ExpressionSet(as.matrix(t(y)))
   mod = model.matrix(~ ., data=predictors) # model with known factors and covariates
   mod0 = model.matrix(~1,data=predictors) # intercept only model
-  n.sv = num.sv(exprs(exprs),mod,method="be") # number of significant surrogate variables.. Using "be" works well with smaller samples
+  n.sv = num.sv(exprs(exprs),mod,method="leek")
   
   if(n.sv > 0){
     svobj = sva(exprs(exprs),mod,mod0,n.sv=n.sv)
