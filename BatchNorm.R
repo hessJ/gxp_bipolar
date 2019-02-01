@@ -1,18 +1,26 @@
 
+
 # load these packages (install if needed)
-require(affy) # req'd
-require(oligo) # req'd
-require(plyr) # recommended 
-require(ggplot2) # recommended
-require(data.table) # req'd
-require(gcrma) # req'd
-library(limma)# req'd
+require(affy)
+require(oligo)
+require(plyr)
+require(ggplot2)
+require(data.table)
+require(gcrma)
+library(limma)
+require(pd.hg.u133.plus.2)
+require(pd.hg.u133a)
+require(pd.hg.u95av2)
+require(illuminaHumanv4.db)
+require(hgu95av2.db)
+require(hgu133plus2.db)
+require()
+require(hgu133a.db)
+require(hgu133b.db)
 
 # list directories containing microarray data 
 # Compatible with Affymetrix CEL (gene chip or exon array) and Illumina txt file (ProbeID, Sample, Detection Pval)
 dir = list.dirs(path="~/Google Drive/mac_storage/TWAS/bd_mega/data/blood",full.names = T,recursive = F)
-dir = dir[grepl("GSE|GEO|Ming|MEXP", dir)] # specifically want these folders
-dir
 
 # make QC plot folder
 dircreate = dir.exists(path = "~/Google Drive/mac_storage/TWAS/bd_mega/data/blood/QCplots")
@@ -32,7 +40,6 @@ NormOut = "~/Google Drive/mac_storage/TWAS/bd_mega/data/blood/normalized_data"
 # 3. Write normalized data to new folder
 # AFFY: GC-RMA or RMA w/ quantile normalization (log2 transformed)
 # ILMN: Background correction based on Detection Pval columns (log2 transformed)
-
 
 for( i in 1:length(dir)){
   
@@ -59,8 +66,9 @@ for( i in 1:length(dir)){
       Exprs = exprs(RMA)
       Exprs = data.frame(PROBEID = rownames(Exprs), Exprs)
       } else {
+        
         # the road to RMA, quantiled normalized exon array data
-      RMA = rma(readCel, normalize = T, target = "probeset");
+      RMA = affy::rma(readCel, normalize = T, target = "probeset");
       
       featureData(RMA) <- getNetAffx(RMA, "probeset")
       annot = pData(featureData(RMA))
@@ -79,6 +87,7 @@ for( i in 1:length(dir)){
     
     # Possibly a pre-made expression matrix (common with Illumina data on GEO)
     if(length(CEL) < 1){
+      
       NON = list.files(dir[[i]], full.names = T, pattern = "non-normalized")
       NON = NON[!grepl(".gz", NON)]
       if(length(NON) == 0) next
@@ -86,9 +95,8 @@ for( i in 1:length(dir)){
       NONread = fread(NON, h=T, sep=  "\t")
       exprnames = colnames(NONread)[!grepl("Probe|ID_REF|Detection", colnames(NONread))]
       
-      
-      
       colnames(NONread)[colnames(NONread) %in% exprnames] = "avgExpr"
+      
       fwrite(NONread, 
              file = paste(dir[[i]],"/ILMN_format.txt",sep=""),
              quote = F, row.names = F, sep = "\t")
@@ -98,13 +106,15 @@ for( i in 1:length(dir)){
                          other.columns="Detection Pval",
                          expr = "avgExpr",
                          probeid = colnames(NONread)[[1]])
-      
+    
+     
       # background correction using Detection p-value column
       y <- neqc(idata, detection.p = "Detection Pval")
       # expression object
       Exprs = data.frame(y$E)
       colnames(Exprs) = exprnames
       Exprs = data.frame(PROBEID = rownames(Exprs), Exprs)
+      
     }
     
     # Boxplot of expression
@@ -135,3 +145,5 @@ for( i in 1:length(dir)){
     
 }
 
+
+  
