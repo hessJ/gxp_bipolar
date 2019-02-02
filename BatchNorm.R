@@ -59,7 +59,7 @@ for( i in 1:length(dir)){
     # is this series an exon array? If so, GCRMA will fail
     exonArrayChecker = readCel@annotation[grepl("huex|st",readCel@annotation)]
     
-    if(length(exonArrayChecker) < 0){
+    if(length(exonArrayChecker) < 1){
       # the road to GC-RMA, quantile normalized gene chip data
       Batch = ReadAffy(filenames = CEL)
       RMA = gcrma::gcrma(Batch, normalize = T); # GC-RMA  (gene chip)
